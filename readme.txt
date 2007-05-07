@@ -26,3 +26,7 @@ on your widgetized sidebar.
 * List types: ul for bulleted list, p for paragraph, br for paragraph with line breaks
 * Before title and After title: you have to find out what your theme uses before and after the widget headers. A simple way to do this is to identify a currently existing widget in your site and viewing the source. Find the title and see what is printed before and after. For example it might show as Widget Title which is used by most themes.
 * Post count: Number of random posts you would like to be displayed
+
+== Change Log ==
+
+* 07-May-2007: Fixed a bug of displaying widget before and after tag

@@ -21,7 +21,7 @@ Plugin Name: Random Posts widget
 Plugin URI: http://www.romantika.name/v2/2007/05/02/wordpress-plugin-random-posts-widget/
 Description: Display Random Posts Widget. Based on <a href="http://www.screenflicker.com/blog/web-development/wordpress-plugin-random-categories-with-random-posts/">Random categories with random posts</a> by Mike Stickel.
 Author: Ady Romantika
-Version: 1.0
+Version: 1.1
 Author URI: http://www.romantika.name/v2/
 */
 
@@ -148,9 +148,9 @@ function widget_ara_randomposts_init() {
 	function widget_ara_randomposts($args) {
 		extract($args);
 		?>
-		<?php echo $opening_widget; ?>
+		<?php echo $before_widget; ?>
 		<?php echo ara_random_posts(); ?>
-		<?php echo $line_end_widget; ?>
+		<?php echo $after_widget; ?>
 <?php
 	}
 
