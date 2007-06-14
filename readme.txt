@@ -3,7 +3,7 @@ Contributors: adywarna
 Donate link: http://www.romantika.name/v2/
 Tags: random, posts, random posts, widget
 Requires at least: 2.1
-Tested up to: 2.1.3
+Tested up to: 2.2
 Stable tag: trunk
 
 This simple plugin is a widget that displays a list of random posts
@@ -30,3 +30,4 @@ on your widgetized sidebar.
 == Change Log ==
 
 * 07-May-2007: Fixed a bug of displaying widget before and after tag
+* 14-Jun-2007: Fixed a bug where pages are also selected. Now it only displays posts.
