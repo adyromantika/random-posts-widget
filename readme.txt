@@ -6,19 +6,17 @@ Requires at least: 2.1
 Tested up to: 2.2
 Stable tag: trunk
 
-This simple plugin is a widget that displays a list of random posts
-on your widgetized sidebar.
+This simple plugin is a widget that displays a list of random posts on your widgetized sidebar.
 
 == Description ==
 
-This simple plugin is a widget that displays a list of random posts
-on your widgetized sidebar.
+This simple plugin is a widget that displays a list of random posts on your widgetized sidebar.
 
 == Installation ==
 
 1. Upload `randomposts.php` to the `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Use your 'Presentation'/'Sidebar Widgets' settings to drag and configure
+1. Activate the plugin through the 'Plugins' menu in WordPress
+1. Use your 'Presentation'/'Sidebar Widgets' settings to drag and configure
 
 == Configuration ==
 
