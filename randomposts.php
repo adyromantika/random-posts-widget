@@ -21,25 +21,23 @@ Plugin Name: Random Posts widget
 Plugin URI: http://www.romantika.name/v2/2007/05/02/wordpress-plugin-random-posts-widget/
 Description: Display Random Posts Widget. Based on <a href="http://www.screenflicker.com/blog/web-development/wordpress-plugin-random-categories-with-random-posts/">Random categories with random posts</a> by Mike Stickel.
 Author: Ady Romantika
-Version: 1.2
+Version: 1.3
 Author URI: http://www.romantika.name/v2/
 */
 
-function ara_random_posts()
+function ara_random_posts($before,$after)
 {
 	global $wpdb;
 	$options = (array) get_option('widget_ara_randomposts');
 	$title = $options['title'];
 	$list_type = $options['type'] ? $options['type'] : 'ul';
-	$before_title = $options['before'] ? $options['before'] : '<h2>';
-	$after_title = $options['after'] ? $options['after'] : '</h2>';
 	$numPosts = $options['count'];
 
 	# Articles from database
 	$rand_articles	=	ara_get_random_posts($numPosts);
 
 	# Header
-	$string_to_echo  =  ($before_title.$title.$after_title."\n");
+	$string_to_echo  =  ($before.$title.$after."\n");
 
 	switch($list_type)
 	{
@@ -102,8 +100,6 @@ function widget_ara_randomposts_control() {
 	if ( $_POST['randomposts-submit'] ) {
 		$newoptions['title'] = strip_tags(stripslashes($_POST['randomposts-title']));
 		$newoptions['type'] = $_POST['randomposts-type'];
-		$newoptions['before'] = $_POST['randomposts-before'];
-		$newoptions['after'] = $_POST['randomposts-after'];
 		$newoptions['count'] = (int) $_POST['randomposts-count'];
 	}
 	if ( $options != $newoptions ) {
@@ -111,8 +107,6 @@ function widget_ara_randomposts_control() {
 		update_option('widget_ara_randomposts', $options);
 	}
 	$list_type = $options['type'] ? $options['type'] : '<ul>';
-	$before_title = $options['before'] ? $options['before'] : '<h2>';
-	$after_title = $options['after'] ? $options['after'] : '</h2>';
 ?>
 			<div style="text-align:right">
 			<label for="randomposts-title" style="line-height:25px;display:block;"><?php _e('Widget title:', 'widgets'); ?> <input style="width: 200px;" type="text" id="randomposts-title" name="randomposts-title" value="<?php echo ($options['title'] ? wp_specialchars($options['title'], true) : 'Random Posts'); ?>" /></label>
@@ -124,8 +118,6 @@ function widget_ara_randomposts_control() {
 						<option value="p"<?php if ($options['type'] == 'p') echo ' selected' ?>>&lt;p&gt;</option>
 					</select>
 			</label>
-			<label for="randomposts-before" style="line-height:25px;display:block;"><?php _e('Before Title:', 'widgets'); ?> <input style="width: 200px;" type="text" id="randomposts-before" name="randomposts-before" value="<?php echo ($options['before'] ? wp_specialchars($options['before'], true) : '<h2>'); ?>" /></label>
-			<label for="randomposts-after" style="line-height:25px;display:block;"><?php _e('After Title:', 'widgets'); ?> <input style="width: 200px;" type="text" id="randomposts-after" name="randomposts-after" value="<?php echo ($options['after'] ? wp_specialchars($options['after'], true) : '</h2>'); ?>" /></label>
 			<label for="randomposts-count" style="line-height:25px;display:block;">
 				<?php _e('Post count:', 'widgets'); ?>
 					<select style="width: 200px;" id="randomposts-count" name="randomposts-count"/>
@@ -150,7 +142,9 @@ function widget_ara_randomposts_init() {
 		extract($args);
 		?>
 		<?php echo $before_widget; ?>
-		<?php echo ara_random_posts(); ?>
+		<!-- Random Posts Widget: START -->
+		<?php echo ara_random_posts($before_title, $after_title); ?>
+		<!-- Random Posts Widget: END -->
 		<?php echo $after_widget; ?>
 <?php
 	}
