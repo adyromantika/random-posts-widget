@@ -21,7 +21,7 @@ Plugin Name: Random Posts widget
 Plugin URI: http://www.romantika.name/v2/2007/05/02/wordpress-plugin-random-posts-widget/
 Description: Display Random Posts Widget. Based on <a href="http://www.screenflicker.com/blog/web-development/wordpress-plugin-random-categories-with-random-posts/">Random categories with random posts</a> by Mike Stickel.
 Author: Ady Romantika
-Version: 1.3
+Version: 1.4
 Author URI: http://www.romantika.name/v2/
 */
 
@@ -32,9 +32,10 @@ function ara_random_posts($before,$after)
 	$title = $options['title'];
 	$list_type = $options['type'] ? $options['type'] : 'ul';
 	$numPosts = $options['count'];
+	$category = $options['cat'];
 
 	# Articles from database
-	$rand_articles	=	ara_get_random_posts($numPosts);
+	$rand_articles	=	ara_get_random_posts($numPosts,$category);
 
 	# Header
 	$string_to_echo  =  ($before.$title.$after."\n");
@@ -68,16 +69,39 @@ function ara_random_posts($before,$after)
 	return $string_to_echo;
 }
 
-function ara_get_random_posts($numPosts = '5') {
+function ara_get_random_posts($numPosts = '5',$category = '') {
 	global $wpdb;
+	
+	if($category == ''):
+		$sql = "SELECT $wpdb->posts.ID FROM $wpdb->posts WHERE $wpdb->posts.post_status = 'publish' AND $wpdb->posts.post_type = 'post'";
+	else:
+		$sql = "SELECT $wpdb->posts.ID ";
+		$sql.= "FROM $wpdb->posts, $wpdb->post2cat ";
+		$sql.= "WHERE $wpdb->posts.post_status = 'publish' ";
+		$sql.= "AND $wpdb->posts.post_type = 'post'";
+		$sql.= "AND $wpdb->post2cat.post_id = $wpdb->posts.ID ";
+		$sql.= "AND $wpdb->post2cat.category_id = $category";
+	endif;
+	$the_ids = $wpdb->get_results($sql);
+	
+	$luckyPosts = array_rand($the_ids,($numPosts > count($the_ids) ? count($the_ids) : $numPosts));
 
-	$sql = "SELECT $wpdb->post2cat.post_id, $wpdb->post2cat.category_id, $wpdb->posts.ID, $wpdb->posts.post_title";
-	$sql .=	" FROM $wpdb->post2cat, $wpdb->posts";
-	$sql .=	" WHERE $wpdb->posts.post_status = 'publish'";
-	$sql .= " AND $wpdb->posts.post_type = 'post'";
-	$sql .= " ORDER BY RAND() LIMIT $numPosts";
-
+	$sql = "SELECT $wpdb->posts.post_title";
+	$sql .=	" FROM $wpdb->posts";
+	$sql .=	" WHERE";
+	# Here we minimize number of query to the database by using ORs - just one query needed
+	foreach ($luckyPosts as $id)
+	{
+		if($notfirst) $sql .= " OR";
+		else $sql .= " (";
+		$sql .= " $wpdb->posts.ID = ".$the_ids[$id]->ID;
+		$notfirst = true;
+	}
+	$sql .= ')';
 	$rand_articles = $wpdb->get_results($sql);
+	
+	# Give it a shuffle just to spice it up
+	shuffle($rand_articles);
 
 	if ($rand_articles)
 	{
@@ -101,12 +125,17 @@ function widget_ara_randomposts_control() {
 		$newoptions['title'] = strip_tags(stripslashes($_POST['randomposts-title']));
 		$newoptions['type'] = $_POST['randomposts-type'];
 		$newoptions['count'] = (int) $_POST['randomposts-count'];
+		$newoptions['cat'] = $_POST['randomposts-category'];
 	}
 	if ( $options != $newoptions ) {
 		$options = $newoptions;
 		update_option('widget_ara_randomposts', $options);
 	}
 	$list_type = $options['type'] ? $options['type'] : '<ul>';
+	$category = $options['cat'] ? $options['cat'] : '';
+	
+	# Get categories from the database
+	$all_categories = get_categories();
 ?>
 			<div style="text-align:right">
 			<label for="randomposts-title" style="line-height:25px;display:block;"><?php _e('Widget title:', 'widgets'); ?> <input style="width: 200px;" type="text" id="randomposts-title" name="randomposts-title" value="<?php echo ($options['title'] ? wp_specialchars($options['title'], true) : 'Random Posts'); ?>" /></label>
@@ -126,6 +155,15 @@ function widget_ara_randomposts_control() {
 						<?php endfor; ?>
 					</select>
 			</label>
+			<label for="randomposts-category" style="line-height:25px;display:block;">
+				<?php _e('Category:', 'widgets'); ?>
+					<select style="width: 200px;" id="randomposts-category" name="randomposts-category"/>
+						<option value="">Ignore</option>
+						<?php foreach ($all_categories as $cat) { ?>
+							<option value="<?php echo $cat->cat_ID ?>"<?php if($options['cat'] == $cat->cat_ID) echo ' selected' ?>><?php echo $cat->cat_name ?></option>
+						<?php } ?>
+					</select>				
+			</label>
 			<input type="hidden" name="randomposts-submit" id="randomposts-submit" value="1" />
 			</div>
 <?php
@@ -141,11 +179,14 @@ function widget_ara_randomposts_init() {
 	function widget_ara_randomposts($args) {
 		extract($args);
 		?>
+		<?php $start = mktime(); ?>
 		<?php echo $before_widget; ?>
 		<!-- Random Posts Widget: START -->
 		<?php echo ara_random_posts($before_title, $after_title); ?>
 		<!-- Random Posts Widget: END -->
 		<?php echo $after_widget; ?>
+		<?php $end = mktime(); ?>
+		<!-- Time taken for all queries to complete is <?php echo $end - $start; ?> seconds -->
 <?php
 	}
 
