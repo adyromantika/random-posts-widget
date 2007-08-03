@@ -21,7 +21,7 @@ Plugin Name: Random Posts widget
 Plugin URI: http://www.romantika.name/v2/2007/05/02/wordpress-plugin-random-posts-widget/
 Description: Display Random Posts Widget. Based on <a href="http://www.screenflicker.com/blog/web-development/wordpress-plugin-random-categories-with-random-posts/">Random categories with random posts</a> by Mike Stickel.
 Author: Ady Romantika
-Version: 1.4
+Version: 1.41
 Author URI: http://www.romantika.name/v2/
 */
 
@@ -169,6 +169,12 @@ function widget_ara_randomposts_control() {
 <?php
 }
 
+function ara_microtime_float()
+{
+	list($usec, $sec) = explode(" ", microtime());
+	return ((float)$usec + (float)$sec);
+}
+
 function widget_ara_randomposts_init() {
 
 	// Check for the required API functions
@@ -178,16 +184,14 @@ function widget_ara_randomposts_init() {
 	// This prints the widget
 	function widget_ara_randomposts($args) {
 		extract($args);
-		?>
-		<?php $start = mktime(); ?>
-		<?php echo $before_widget; ?>
-		<!-- Random Posts Widget: START -->
-		<?php echo ara_random_posts($before_title, $after_title); ?>
-		<!-- Random Posts Widget: END -->
-		<?php echo $after_widget; ?>
-		<?php $end = mktime(); ?>
-		<!-- Time taken for all queries to complete is <?php echo $end - $start; ?> seconds -->
-<?php
+		$start = ara_microtime_float();
+		echo $before_widget;
+		echo "\n".'<!-- Random Posts Widget: START -->'."\n";
+		echo ara_random_posts($before_title, $after_title);
+		echo "\n".'<!-- Random Posts Widget: END -->'."\n";
+		echo $after_widget;
+		$end = ara_microtime_float();
+		echo "\n".'<!-- Time taken for the 2 queries to complete is '.($end - $start).' seconds -->'."\n";
 	}
 
 	// Tell Dynamic Sidebar about our new widget and its control
