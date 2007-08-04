@@ -31,3 +31,4 @@ This simple plugin is a widget that displays a list of random posts on your widg
 * 14-Jun-2007: Fixed a bug where pages are also selected. Now it only displays posts.
 * 26-Jun-2007: Removed before and after configuration options, now taken from theme settings
 * 03-Aug-2007: Overhauled entire engine to optimize queries. This has been tested on a test blog with 50,000 posts on an old machine (Pentium III 600MHz) in maximum 3 seconds. Also removed duplicated results and added category to choose.
+* 04-Aug-2007: Fixed a bug where wrong permalink was displayed

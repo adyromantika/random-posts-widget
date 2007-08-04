@@ -21,7 +21,7 @@ Plugin Name: Random Posts widget
 Plugin URI: http://www.romantika.name/v2/2007/05/02/wordpress-plugin-random-posts-widget/
 Description: Display Random Posts Widget. Based on <a href="http://www.screenflicker.com/blog/web-development/wordpress-plugin-random-categories-with-random-posts/">Random categories with random posts</a> by Mike Stickel.
 Author: Ady Romantika
-Version: 1.41
+Version: 1.4.2
 Author URI: http://www.romantika.name/v2/
 */
 
@@ -71,7 +71,7 @@ function ara_random_posts($before,$after)
 
 function ara_get_random_posts($numPosts = '5',$category = '') {
 	global $wpdb;
-	
+
 	if($category == ''):
 		$sql = "SELECT $wpdb->posts.ID FROM $wpdb->posts WHERE $wpdb->posts.post_status = 'publish' AND $wpdb->posts.post_type = 'post'";
 	else:
@@ -83,10 +83,10 @@ function ara_get_random_posts($numPosts = '5',$category = '') {
 		$sql.= "AND $wpdb->post2cat.category_id = $category";
 	endif;
 	$the_ids = $wpdb->get_results($sql);
-	
+
 	$luckyPosts = array_rand($the_ids,($numPosts > count($the_ids) ? count($the_ids) : $numPosts));
 
-	$sql = "SELECT $wpdb->posts.post_title";
+	$sql = "SELECT $wpdb->posts.post_title, $wpdb->posts.ID";
 	$sql .=	" FROM $wpdb->posts";
 	$sql .=	" WHERE";
 	# Here we minimize number of query to the database by using ORs - just one query needed
@@ -99,7 +99,7 @@ function ara_get_random_posts($numPosts = '5',$category = '') {
 	}
 	$sql .= ')';
 	$rand_articles = $wpdb->get_results($sql);
-	
+
 	# Give it a shuffle just to spice it up
 	shuffle($rand_articles);
 
@@ -133,7 +133,7 @@ function widget_ara_randomposts_control() {
 	}
 	$list_type = $options['type'] ? $options['type'] : '<ul>';
 	$category = $options['cat'] ? $options['cat'] : '';
-	
+
 	# Get categories from the database
 	$all_categories = get_categories();
 ?>
@@ -162,7 +162,7 @@ function widget_ara_randomposts_control() {
 						<?php foreach ($all_categories as $cat) { ?>
 							<option value="<?php echo $cat->cat_ID ?>"<?php if($options['cat'] == $cat->cat_ID) echo ' selected' ?>><?php echo $cat->cat_name ?></option>
 						<?php } ?>
-					</select>				
+					</select>
 			</label>
 			<input type="hidden" name="randomposts-submit" id="randomposts-submit" value="1" />
 			</div>
