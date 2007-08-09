@@ -21,7 +21,7 @@ Plugin Name: Random Posts widget
 Plugin URI: http://www.romantika.name/v2/2007/05/02/wordpress-plugin-random-posts-widget/
 Description: Display Random Posts Widget. Based on <a href="http://www.screenflicker.com/blog/web-development/wordpress-plugin-random-categories-with-random-posts/">Random categories with random posts</a> by Mike Stickel.
 Author: Ady Romantika
-Version: 1.4.2
+Version: 1.4.3
 Author URI: http://www.romantika.name/v2/
 */
 
@@ -84,7 +84,7 @@ function ara_get_random_posts($numPosts = '5',$category = '') {
 	endif;
 	$the_ids = $wpdb->get_results($sql);
 
-	$luckyPosts = array_rand($the_ids,($numPosts > count($the_ids) ? count($the_ids) : $numPosts));
+	$luckyPosts = (array) array_rand($the_ids,($numPosts > count($the_ids) ? count($the_ids) : $numPosts));
 
 	$sql = "SELECT $wpdb->posts.post_title, $wpdb->posts.ID";
 	$sql .=	" FROM $wpdb->posts";
