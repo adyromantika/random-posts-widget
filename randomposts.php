@@ -21,7 +21,7 @@ Plugin Name: Random Posts widget
 Plugin URI: http://www.romantika.name/v2/2007/05/02/wordpress-plugin-random-posts-widget/
 Description: Display Random Posts Widget. Based on <a href="http://www.screenflicker.com/blog/web-development/wordpress-plugin-random-categories-with-random-posts/">Random categories with random posts</a> by Mike Stickel.
 Author: Ady Romantika
-Version: 1.4.3
+Version: 1.5.0
 Author URI: http://www.romantika.name/v2/
 */
 
@@ -70,17 +70,30 @@ function ara_random_posts($before,$after)
 }
 
 function ara_get_random_posts($numPosts = '5',$category = '') {
-	global $wpdb;
+	global $wpdb, $wp_db_version;
 
 	if($category == ''):
 		$sql = "SELECT $wpdb->posts.ID FROM $wpdb->posts WHERE $wpdb->posts.post_status = 'publish' AND $wpdb->posts.post_type = 'post'";
 	else:
-		$sql = "SELECT $wpdb->posts.ID ";
-		$sql.= "FROM $wpdb->posts, $wpdb->post2cat ";
-		$sql.= "WHERE $wpdb->posts.post_status = 'publish' ";
-		$sql.= "AND $wpdb->posts.post_type = 'post'";
-		$sql.= "AND $wpdb->post2cat.post_id = $wpdb->posts.ID ";
-		$sql.= "AND $wpdb->post2cat.category_id = $category";
+		if($wp_db_version >= 6124): // Database structure has changed since WP 2.3
+			$sql = "SELECT $wpdb->posts.ID ";
+			$sql.= "FROM $wpdb->posts, $wpdb->term_relationships, $wpdb->term_taxonomy ";
+			$sql.= "WHERE $wpdb->posts.post_status = 'publish' ";
+			$sql.= "AND $wpdb->posts.post_type = 'post' ";
+			$sql.= 'AND ';
+			$sql.= '( ';
+			$sql.= "$wpdb->posts.ID = $wpdb->term_relationships.object_id ";
+			$sql.= "AND $wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_taxonomy_id ";
+			$sql.= "AND $wpdb->term_taxonomy.term_id = $category ";
+			$sql.= ')';
+		else:
+			$sql = "SELECT $wpdb->posts.ID ";
+			$sql.= "FROM $wpdb->posts, $wpdb->post2cat ";
+			$sql.= "WHERE $wpdb->posts.post_status = 'publish' ";
+			$sql.= "AND $wpdb->posts.post_type = 'post'";
+			$sql.= "AND $wpdb->post2cat.post_id = $wpdb->posts.ID ";
+			$sql.= "AND $wpdb->post2cat.category_id = $category";
+		endif;
 	endif;
 	$the_ids = $wpdb->get_results($sql);
 
