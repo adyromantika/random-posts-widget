@@ -3,20 +3,26 @@ Contributors: adywarna
 Donate link: http://www.romantika.name/v2/
 Tags: random, posts, random posts, widget
 Requires at least: 2.1
-Tested up to: 2.3
-Stable tag: trunk
+Tested up to: 3.5.1
+Stable tag: 2.1
 
 This simple plugin is a widget that displays a list of random posts on your widgetized sidebar.
+
+It supports multiple instances with WordPress 2.8 and above.
 
 == Description ==
 
 This simple plugin is a widget that displays a list of random posts on your widgetized sidebar.
 
+It supports multiple instances with WordPress 2.8 and above.
+
 == Installation ==
 
-1. Upload `randomposts.php` to the `/wp-content/plugins/` directory
+1. Upload `randomposts.php` to the `/wp-content/plugins/random-posts-widget` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. Use your 'Presentation'/'Sidebar Widgets' settings to drag and configure
+
+Or use the automatic update feature
 
 == Configuration ==
 
@@ -34,3 +40,4 @@ This simple plugin is a widget that displays a list of random posts on your widg
 * 04-Aug-2007: Fixed a bug where wrong permalink was displayed
 * 10-Aug-2007: Fixed a bug where if 1 post count is selected an error occured
 * 27-Sep-2007: Added ability to detect database version (WordPress 2.3 has database changed) while maintaining backward-compatibility with 2.2.x
+* 30-May-2013: Use WP_Widget to allow multiple instances since WordPress 2.8, while maintaining backwards-compatibility
